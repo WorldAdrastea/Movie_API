@@ -9,5 +9,28 @@
   </head>
   <body>
     <h1>Movie API Documentation Page</h1>
+    <div>
+      <ul>
+        <li>1. Return a list of ALL movies to the user</li>
+        <li>2. Return data (description, genre, director, image URL, whether it's featured or not) about a single movie by title to the user</li>
+        <li>3. Return data about a genre (description) by name/title</li>
+        <li>4. Return data about a director (bio, birth year, death year) by name</li>
+        <li>5. Allows users to register</li>
+        <li>6. Allows users to update their info</li>
+        <li>7. Allow users to add a movie to their list of favourites</li>
+        <li>8. Allow users to remove a movie from their list of favourites</li>
+        <li>9. Allow users to unregister.</li>
+    </ul>
+    <p>Using the format of Business Logic - URL - HTTP Method - Parameters - Request body format - Respond body format</p>
+    <p>1. Return a list of ALL movies to the user - /movies - GET - N/A - N/A - JSON Object</p>
+    <p>2. Return data by title - /movies/:title - GET - :title - N/A - JSON Object</p>
+    <p>3. Return data by genre - /movies/genre/:genreName - GET - :genreName - N/A - JSON Object</p>
+    <p>4. Return data by director - /movies/director/:directorName - GET - :directorName - N/A - JSON Object</p>
+    <p>5. Allows new users to register - /users - POST - N/A - JSON Object</p>
+    <p>6. Allows users to update their info - /users/:id - PUT - :id - N/A - JSON Object</p>
+    <p>7. Allows users to add a movie to their list of favourites - /users/:id/:movieTitle - POST - :id :movieTitle - N/A - JSON Object</p>
+    <p>8. Allows users to remove a movie from their list of favourites - /users/:id/:movieTitle - DELETE - :id :movieTitle - N/A - JSON Object</p>
+    <p>9. Allow users to unregister - /users/:id - DELETE - :id - N/A - It will return: 'User [name] has been deleted'</p>
+    </div>
   </body>
 </html>
