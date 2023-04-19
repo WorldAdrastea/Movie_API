@@ -1,88 +1,45 @@
 //requires modules
 const express = require('express'),
-    app = express()
+    app = express(),
     bodyParser = require('body-parser'),
-    uuid = require('uuid');
+    uuid = require('uuid'),
+    mongoose = require('mongoose'),
+    Models = require('./models.js');
+
+const Movies = Models.Movie;
+const Users = Models.User;
+
+//Mongoose intergration with REST API
+mongoose.connect('mongodb://localhost:8080/MovieAPI', { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(bodyParser.json());
 
-//users
-let users = [
-    {
-        id: 1,
-        name: 'Nana',
-        favMovie: []
-    },
-    {
-        id: 2,
-        name: 'Pat',
-        favMovie: ['Morbius']
-    },
-];
-//list of top movies
-let movies = [
-    {
-        'title': 'Puss in Boots: The Last Wish',
-        'year': '(2022)',
-        'description': 'The third Puss in Boots movie of the series',
-        'genre': {
-            'name':'Animation',
-            'description':'An Animation'
-        },
-        'director': {
-            'name': 'Joel Crawford',
-            'bio': 'Joel Crawford is an American storyboard artist and director best known for his work on several DreamWorks Animation films, including The Croods: A New Age and Puss in Boots: The Last Wish. Crawford was born in Minneapolis and raised in Reno, Nevada and Los Angeles.',
-            'birth': '1975'
-        },
-        'imageUrl':'https://www.imdb.com/title/tt3915174/mediaviewer/rm342562561/?ref_=ext_shr_lnk',
-        'featured':false
-    },
-    {
-        'title': 'Morbius',
-        'year': '(2022)',
-        'description': 'Morbius',
-        'genre': {
-            'name':'Supernatural',
-            'description':'Unnatural phenomena',
-        },
-        'director': {
-            'name': 'Daniel Espinosa',
-            'bio':'Jorge Daniel Espinosa is a Swedish film director from Trångsund, Stockholm, of Chilean origin.',
-            'birth':'1977'
-        },
-        'imageUrl':'https://www.imdb.com/title/tt5108870/mediaviewer/rm2505970177/?ref_=ext_shr_lnk',
-        'featured':false
-    },
-    {
-        'title': 'Bee Movie',
-        'year': '(2007)',
-        'description': 'Movie about bees',
-        'genre': {
-            'name':'Animation',
-            'description':'An Animation',
-        },
-        'director': {
-            'name':'Simon J. Smith',
-            'bio':'Simon James Smith is a British animator, film director, and voice actor. He is best known for his work at DreamWorks Animation. Smith came to PDI/DreamWorks in 1997 as head of layout for the company\'s feature film division.',
-            'birth':'1968',
-        },
-        'imageUrl':'https://www.imdb.com/title/tt0389790/mediaviewer/rm3067186432/?ref_=ext_shr_lnk',
-        'featured':false
-    }
-];
-
 //CREATE
 app.post('/users', (req, res) => {
-    const newUser = req.body;
-
-    if (newUser.name) {
-        newUser.id = uuid.v4();
-        users.push(newUser);
-        res.status(201).json(newUser)
-    } else {
-        res.status(400).send('users need names')
-    }
-})
+    Users.findOne({ Username: req.body.Username })
+      .then((user) => {
+        if (user) {
+          return res.status(400).send(req.body.Username + 'already exists');
+        } else {
+          Users
+            .create({
+              Username: req.body.Username,
+              Password: req.body.Password,
+              Email: req.body.Email,
+              Birthday: req.body.Birthday
+            })
+            .then((user) =>{res.status(201).json(user) })
+          .catch((error) => {
+            console.error(error);
+            res.status(500).send('Error: ' + error);
+          })
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(500).send('Error: ' + error);
+      });
+  });
 
 //UPDATE
 app.put('/users/:id', (req, res) => {
@@ -98,6 +55,26 @@ app.put('/users/:id', (req, res) => {
         res.status(400).send('no such user')
     }
 })
+
+app.put('/users/:Username', (req, res) => {
+    Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
+      {
+        Username: req.body.Username,
+        Password: req.body.Password,
+        Email: req.body.Email,
+        Birthday: req.body.Birthday
+      }
+    },
+    { new: true }, // This line makes sure that the updated document is returned
+    (err, updatedUser) => {
+      if(err) {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    });
+  });
 
 
 //CREATE
@@ -142,6 +119,22 @@ app.delete('/users/:id', (req, res) => {
     }
 })
 
+// Delete a user by username
+app.delete('/users/:Username', (req, res) => {
+    Users.findOneAndRemove({ Username: req.params.Username })
+      .then((user) => {
+        if (!user) {
+          res.status(400).send(req.params.Username + ' was not found');
+        } else {
+          res.status(200).send(req.params.Username + ' was deleted.');
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      });
+  });
+
 
 //READ
 app.get('/', (req,res) => {
@@ -153,6 +146,30 @@ app.get('/', (req,res) => {
 app.get('/documentation', (req, res) => {
     res.sendFile('public/documentation.html', { root: __dirname});
 });
+
+// Get all users
+app.get('/users', (req, res) => {
+    Users.find()
+      .then((users) => {
+        res.status(201).json(users);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      });
+  });
+
+  // Get a user by username
+app.get('/users/:Username', (req, res) => {
+    Users.findOne({ Username: req.params.Username })
+      .then((user) => {
+        res.json(user);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send('Error: ' + err);
+      });
+  });
 
 //Gets list of movies
 app.get('/movies', (req, res) => {
