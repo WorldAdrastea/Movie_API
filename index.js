@@ -10,7 +10,7 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 //Mongoose intergration with REST API
-mongoose.connect('mongodb://localhost:8080/MovieAPI', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/MovieAPI', { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(bodyParser.json());
 
