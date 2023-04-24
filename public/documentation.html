@@ -27,10 +27,10 @@
     <p>3. Return data by genre - /movies/genre/:genreName - GET - :genreName - N/A - JSON Object</p>
     <p>4. Return data by director - /movies/director/:directorName - GET - :directorName - N/A - JSON Object</p>
     <p>5. Allows new users to register - /users - POST - N/A - JSON Object</p>
-    <p>6. Allows users to update their info - /users/:id - PUT - :id - N/A - JSON Object</p>
-    <p>7. Allows users to add a movie to their list of favourites - /users/:id/:movieTitle - POST - :id :movieTitle - N/A - JSON Object</p>
-    <p>8. Allows users to remove a movie from their list of favourites - /users/:id/:movieTitle - DELETE - :id :movieTitle - N/A - JSON Object</p>
-    <p>9. Allow users to unregister - /users/:id - DELETE - :id - N/A - It will return: 'User [name] has been deleted'</p>
+    <p>6. Allows users to update their info - /users/:Username - PUT - :id - N/A - JSON Object</p>
+    <p>7. Allows users to add a movie to their list of favourites - /users/:Username/movies/:MovieID - POST - :id :movieTitle - N/A - JSON Object</p>
+    <p>8. Allows users to remove a movie from their list of favourites - /users/:Username/movies/:MovieID - DELETE - :id :movieTitle - N/A - JSON Object</p>
+    <p>9. Allow users to unregister - /users/:Username - DELETE - :id - N/A - It will return: 'User [name] has been deleted'</p>
     </div>
   </body>
 </html>
