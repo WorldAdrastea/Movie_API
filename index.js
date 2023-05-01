@@ -12,7 +12,7 @@ const Movies = Models.Movie;
 const Users = Models.User;
 
 //Mongoose intergration with REST API
-mongoose.connect("mongodb://127.0.0.1:27017/MoviesAPI", {
+mongoose.connect(process.env.CONNECTION_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -23,6 +23,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const cors = require('cors');
 let allowedOrigins = [
   'http://localhost:8080',
+  'https://git.heroku.com/movies-guide.git',
   'http://testsite.com'
 ];
 
