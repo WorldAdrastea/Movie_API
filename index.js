@@ -4,12 +4,15 @@ const express = require("express"),
   bodyParser = require("body-parser"),
   uuid = require("uuid"),
   mongoose = require("mongoose"),
-  Models = require("./models.js");
+  Models = require("./models.js"),
+  dotenv = require("dotenv");
 
 const {check, validationResult} = require('express-validator');
 
 const Movies = Models.Movie;
 const Users = Models.User;
+
+dotenv.config();
 
 //Mongoose intergration with REST API
 mongoose.connect(process.env.CONNECTION_URI, {
