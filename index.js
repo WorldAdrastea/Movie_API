@@ -1,4 +1,6 @@
-//requires modules
+/**
+ * Requires modules
+ */
 const express = require("express"),
   app = express(),
   bodyParser = require("body-parser"),
@@ -8,6 +10,11 @@ const express = require("express"),
 
 const { check, validationResult } = require("express-validator");
 
+/**
+  * Movie and User models
+  * @typedef {import("./models.js").MovieModel} MovieModel
+  * @typedef {import("./models.js").UserModel} UserModel
+  */
 const Movies = Models.Movie;
 const Users = Models.User;
 dotenv.config();
@@ -50,7 +57,9 @@ let auth = require("./auth.js")(app);
 const passport = require("passport");
 require("./passport.js");
 
-//READ
+/**
+ * Read
+ */
 app.get("/", (req, res) => {
   let responseText = "Welcome to the myFlix application!";
   res.send(responseText);
@@ -60,7 +69,16 @@ app.get("/documentation", (req, res) => {
   res.sendFile("public/documentation.html", { root: __dirname });
 });
 
-// Get all users
+/**
+  * Route handler for getting all users
+  * @name GET /users
+  * @function
+  * @memberof module:app
+  * @inner
+  * @param {string} path - Express route path
+  * @param {function} middleware - Passport middleware
+  * @param {function} handler - Express route handler
+  */
 app.get(
   "/users",
   passport.authenticate("jwt", { session: false }),
@@ -76,7 +94,16 @@ app.get(
   }
 );
 
-// Get a user by username
+/**
+  * Route handler for getting a user by username
+  * @name GET /users/:Username
+  * @function
+  * @memberof module:app
+  * @inner
+  * @param {string} path - Express route path
+  * @param {function} middleware - Passport middleware
+  * @param {function} handler - Express route handler
+  */
 app.get(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
@@ -92,7 +119,16 @@ app.get(
   }
 );
 
-//Gets list of movies
+/**
+  * Route handler for getting movies from API
+  * @name GET /movies
+  * @function
+  * @memberof module:app
+  * @inner
+  * @param {string} path - Express route path
+  * @param {function} middleware - Passport middleware
+  * @param {function} handler - Express route handler
+  */
 app.get(
   "/movies",
   passport.authenticate("jwt", { session: false }),
@@ -108,7 +144,16 @@ app.get(
   }
 );
 
-//Gets movies by title
+/**
+  * Route handler for getting a movie by title
+  * @name GET /movies/:title
+  * @function
+  * @memberof module:app
+  * @inner
+  * @param {string} path - Express route path
+  * @param {function} middleware - Passport middleware
+  * @param {function} handler - Express route handler
+  */
 app.get(
   "/movies/:title",
   passport.authenticate("jwt", { session: false }),
@@ -129,7 +174,16 @@ app.get(
   }
 );
 
-//Gets movies by genre
+/**
+  * Route handler for getting movies by genre
+  * @name GET /movies/genre/:genreName
+  * @function
+  * @memberof module:app
+  * @inner
+  * @param {string} path - Express route path
+  * @param {function} middleware - Passport middleware
+  * @param {function} handler - Express route handler
+  */
 app.get(
   "/movies/genre/:genreName",
   passport.authenticate("jwt", { session: false }),
@@ -149,7 +203,16 @@ app.get(
   }
 );
 
-//Gets movies by director
+/**
+  * Route handler for getting movies by director
+  * @name GET /movies/director/:directorName
+  * @function
+  * @memberof module:app
+  * @inner
+  * @param {string} path - Express route path
+  * @param {function} middleware - Passport middleware
+  * @param {function} handler - Express route handler
+  */
 app.get(
   "/movies/director/:directorName",
   passport.authenticate("jwt", { session: false }),
@@ -169,7 +232,16 @@ app.get(
   }
 );
 
-//CREATE
+/**
+  * Route handler for creating a new user
+  * @name POST /users
+  * @function
+  * @memberof module:app
+  * @inner
+  * @param {string} path - Express route path
+  * @param {array} middleware - Express middleware array for validation
+  * @param {function} handler - Express route handler
+  */
 app.post(
   "/users",
   //Validation logic
@@ -216,7 +288,17 @@ app.post(
   }
 );
 
-//UPDATE
+/**
+  * Route handler for updating a user's information
+  * @name PUT /users/:Username
+  * @function
+  * @memberof module:app
+  * @inner
+  * @param {string} path - Express route path
+  * @param {function} middleware - Passport middleware
+  * @param {Array<Validator>} validators - Array of express-validator middleware functions
+  * @param {function} handler - Express route handler
+  */
 app.put(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
@@ -256,7 +338,16 @@ app.put(
   }
 );
 
-//CREATE
+/**
+  * Route handler for adding a movie to a user's favorite list
+  * @name POST /users/:Username/movies/:MovieID
+  * @function
+  * @memberof module:app
+  * @inner
+  * @param {string} path - Express route path
+  * @param {array} middleware - Express middleware array for authentication
+  * @param {function} handler - Express route handler
+  */
 app.post(
   "/users/:Username/movies/:MovieID",
   passport.authenticate("jwt", { session: false }),
@@ -280,7 +371,16 @@ app.post(
   }
 );
 
-//DELETE
+/**
+  * Route handler for removing a movie from a user's favorite list
+  * @name DELETE /users/:Username/movies/:MovieID
+  * @function
+  * @memberof module:app
+  * @inner
+  * @param {string} path - Express route path
+  * @param {array} middleware - Express middleware array for authentication
+  * @param {function} handler - Express route handler
+  */
 app.delete(
   "/users/:Username/movies/:MovieID",
   passport.authenticate("jwt", { session: false }),
@@ -306,7 +406,16 @@ app.delete(
   }
 );
 
-//DELETE Delete a user by username
+/**
+  * Route handler for deleting a user by username
+  * @name DELETE /users/:Username
+  * @function
+  * @memberof module:app
+  * @inner
+  * @param {string} path - Express route path
+  * @param {array} middleware - Express middleware array for authentication
+  * @param {function} handler - Express route handler
+  */
 app.delete(
   "/users/:Username",
   passport.authenticate("jwt", { session: false }),
@@ -326,13 +435,24 @@ app.delete(
   }
 );
 
-//Error Handler
+/**
+  * Error handler middleware
+  * @function
+  * @memberof module:app
+  * @param {Error} err - The error object
+  * @param {Request} req - The Express request object
+  * @param {Response} res - The Express response object
+  * @param {function} next - The next middleware function
+  */
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something broke!");
 });
 
-//Port
+/**
+  * Port configuration
+  * @type {number}
+  */
 const port = process.env.PORT || 8080;
 app.listen(port, "0.0.0.0", () => {
   console.log("Listening on Port " + port);
