@@ -1,12 +1,13 @@
 /**
  * Requires modules
  */
-const express = require("express"),
-  app = express(),
-  bodyParser = require("body-parser"),
-  uuid = require("uuid"),
-  dotenv = require("dotenv");
-(mongoose = require("mongoose")), (Models = require("./models.js"));
+const express = require("express");
+const app = express();
+const bodyParser = require("body-parser");
+const uuid = require("uuid");
+const dotenv = require("dotenv"); 
+const mongoose = require("mongoose");
+const Models = require("./models.js");
 
 const { check, validationResult } = require("express-validator");
 
@@ -36,7 +37,7 @@ let allowedOrigins = [
   "http://localhost:1234",
   "https://myflixmovieapplication.netlify.app",
   "http://localhost:4200",
-  "http://184.73.110.180"
+  "https://3.95.24.165"
 ];
 
 app.use(
