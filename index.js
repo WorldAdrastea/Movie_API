@@ -37,7 +37,8 @@ let allowedOrigins = [
   "http://localhost:1234",
   "https://myflixmovieapplication.netlify.app",
   "http://localhost:4200",
-  "https://3.95.24.165"
+  "https://3.95.24.165",
+  "http://reactbucketachievement1-1.7.s3-website.eu-west-2.amazonaws.com"
 ];
 
 app.use(
