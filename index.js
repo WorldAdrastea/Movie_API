@@ -11,7 +11,7 @@ const Models = require("./models.js");
 const fs = require("fs");
 const fileUpload = require("express-fileupload");
 const { S3Client, ListObjectsV2Command, PutObjectCommand } = require("@aws-sdk/client-s3");
-const { check, validationResult } = require("express-validator");
+const { check, validationResult, param } = require("express-validator");
 
 /**
   * Movie and User models
@@ -54,7 +54,7 @@ const listObjectsParams = {
 }
 
 listObjectsCmD = new ListObjectsV2Command(listObjectsParams)
-s3Client.send(listObjectsParams)
+s3Client.send(listObjectsCmD)
 
 app.use(
   cors({
@@ -73,7 +73,6 @@ app.use(
 let auth = require("./auth.js")(app);
 
 const passport = require("passport");
-const { ListObjectsV2Command } = require("@aws-sdk/client-s3");
 require("./passport.js");
 
 /**
@@ -251,14 +250,23 @@ app.get(
   }
 );
 
-app.get('/images', (req, res) => {
-  listObjectsParams = {
-    Bucket: IMAGES_BUCKET //Add the actual bucket name here
+app.get(
+  "/movies/images", 
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+  const listObjectsParams = {
+    Bucket: process.env.BUCKET_NAME
   }
-  S3Client.send(new ListObjectsV2Command(listObjectsParams))
+
+  s3Client.send(new ListObjectsV2Command(listObjectsParams))
     .then((listObjectsResponse) => {
-      res.send(listObjectsResponse)
+      const objectKeys = listObjectsResponse.Contents.map(obj => obj.Key);
+      res.status(200).json(objectKeys);
     })
+    .catch((err) => {
+      console.error("Error listing objects: ", err);
+      res.status(500).json({ error: "Error listing objects" });
+    });
 });
 
 /**
@@ -317,12 +325,40 @@ app.post(
   }
 );
 
-app.post('/images', (req, res) => {
-  const file = req.files.image
-  const fileName = req.files.image.name
-  const tempPath = `${UPLOAD_TEMP_PATH}/${fileName}`
-  file.mv(tempPath, (err) => { res.status(500) })
-})
+app.use(fileUpload());
+
+app.post(
+  '/movies/images',
+  passport.authenticate("jwt", { session: false }), 
+  (req, res) => {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).json({ error: 'No files were uploaded' });
+  }
+
+  const imageFile = req.files.image;
+  
+  if (imageFile.mimetype !== 'image/jpeg' && imageFile.mimetype !== 'image/png') {
+    return res.status(400).json({ error: 'Unsupported file format' });
+  }
+
+  const fileName = req.files.image.name;
+
+  const params = {
+    Bucket: process.env.BUCKET_NAME,
+    Key: fileName,
+    Body: imageFile.data,
+    ContentType: imageFile.mimetype,
+  };
+
+  s3Client.send(new PutObjectCommand(params))
+    .then(() => {
+      res.status(200).json({ message: 'File uploaded successfully' });
+    })
+    .catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: 'File upload failed' });
+    });
+});
 
 /**
   * Route handler for updating a user's information
