@@ -45,8 +45,8 @@ let allowedOrigins = [
 
 const s3Client = new S3Client({
   region: "us-east-1",
-  endpoint: "http://localhost:4566",
-  forcePathStyle: true
+  // endpoint: "http://localhost:4566",
+  // forcePathStyle: true
 })
 
 const listObjectsParams = {
@@ -251,8 +251,9 @@ app.get(
 );
 
 app.get(
-  "/movies/images", 
-  passport.authenticate("jwt", { session: false }),
+  // "/movies/images", 
+  // passport.authenticate("jwt", { session: false }),
+  "/images",
   (req, res) => {
   const listObjectsParams = {
     Bucket: process.env.BUCKET_NAME
@@ -328,8 +329,9 @@ app.post(
 app.use(fileUpload());
 
 app.post(
-  '/movies/images',
-  passport.authenticate("jwt", { session: false }), 
+  // '/movies/images',
+  '/images',
+  // passport.authenticate("jwt", { session: false }), 
   (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).json({ error: 'No files were uploaded' });
