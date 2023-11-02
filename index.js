@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 const Models = require("./models.js");
 const fs = require("fs");
 const fileUpload = require("express-fileupload");
-const { S3Client, ListObjectsV2Command, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, ListObjectsV2Command, PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { check, validationResult, param } = require("express-validator");
 
 /**
@@ -268,6 +268,50 @@ app.get(
       console.error("Error listing objects: ", err);
       res.status(500).json({ error: "Error listing objects" });
     });
+});
+
+app.get(
+  "/images/:objectKey",
+  async (req,res) => {
+    const objectKey = req.params.objectKey
+    try {
+      const listObjectsParams = {
+        Bucket: process.env.BUCKET_NAME,
+      };
+      const listObjectsCommand = new ListObjectsV2Command(listObjectsParams);
+      const listObjectsResponse = await s3Client.send(listObjectsCommand);
+  
+      // Check if the objectKey exists in the list
+      const objectExists = listObjectsResponse.Contents.some((object) => object.Key === objectKey);
+  
+      if (!objectExists) {
+        return res.status(404).send('Object not found');
+      }
+
+    const params = {
+      Bucket: process.env.BUCKET_NAME,
+      Key: objectKey,
+    };
+
+    const getObjectCommand = new GetObjectCommand(params);
+    const getObjectResponse = await s3Client.send(getObjectCommand);
+
+    const chunks = [];
+    getObjectResponse.Body.on('data', (chunk) => {
+      chunks.push(chunk);
+    });
+    // console.log('GetObjectResponse: ', getObjectResponse);
+
+    getObjectResponse.Body.on('end', () => {
+      const dataBuffer = Buffer.concat(chunks);
+      const contentType = getObjectResponse.ContentType;
+      res.setHeader('Content-Type', contentType);
+      res.send(dataBuffer);
+    });
+  } catch (err) {
+    console.error('Error retrieving S3 object:', err);
+    return res.status(500).json({ error: 'Error retrieving object' });
+  }
 });
 
 /**
