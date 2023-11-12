@@ -251,9 +251,8 @@ app.get(
 );
 
 app.get(
-  // "/movies/images", 
-  // passport.authenticate("jwt", { session: false }),
-  "/images",
+  "/movies/images", 
+  passport.authenticate("jwt", { session: false }),
   (req, res) => {
   const listObjectsParams = {
     Bucket: process.env.BUCKET_NAME
@@ -373,9 +372,8 @@ app.post(
 app.use(fileUpload());
 
 app.post(
-  // '/movies/images',
-  '/images',
-  // passport.authenticate("jwt", { session: false }), 
+  '/movies/images',
+  passport.authenticate("jwt", { session: false }), 
   (req, res) => {
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).json({ error: 'No files were uploaded' });
