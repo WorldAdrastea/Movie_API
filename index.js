@@ -20,6 +20,7 @@ const { check, validationResult, param } = require("express-validator");
   */
 const Movies = Models.Movie;
 const Users = Models.User;
+
 dotenv.config();
 
 //Mongoose intergration with REST API
@@ -40,7 +41,8 @@ let allowedOrigins = [
   "https://myflixmovieapplication.netlify.app",
   "http://localhost:4200",
   "https://3.95.24.165",
-  "http://reactbucketachievement1-1.7.s3-website.eu-west-2.amazonaws.com"
+  "http://reactbucketachievement1-1.7.s3-website.eu-west-2.amazonaws.com",
+  "http://albwebserver-475827285.us-east-1.elb.amazonaws.com"
 ];
 
 const s3Client = new S3Client({
@@ -156,7 +158,7 @@ app.get(
         res.status(201).json(movies);
       })
       .catch((err) => {
-        console.errror(err);
+        console.error(err);
         res.status(500).send("Error: " + err);
       });
   }
