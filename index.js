@@ -3,7 +3,6 @@
  */
 const express = require("express");
 const app = express();
-const server = app.listen(8080);
 const bodyParser = require("body-parser");
 const uuid = require("uuid");
 const dotenv = require("dotenv"); 
@@ -553,10 +552,6 @@ app.delete(
       });
   }
 );
-
-// Sets timeout values
-server.keepAliveTimeout = 65000;
-server.headersTimeout = 80000;
 
 /**
   * Error handler middleware
