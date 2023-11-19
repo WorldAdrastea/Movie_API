@@ -32,18 +32,18 @@ mongoose.connect(process.env.CONNECTION_URI, {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// const cors = require("cors");
-// let allowedOrigins = [
-//   "http://localhost:8080",
-//   "https://git.heroku.com/movies-guide.git",
-//   "http://testsite.com",
-//   "http://localhost:1234",
-//   "https://myflixmovieapplication.netlify.app",
-//   "http://localhost:4200",
-//   "https://3.95.24.165",
-//   "http://reactbucketachievement1-1.7.s3-website.eu-west-2.amazonaws.com",
-//   "http://albwebserver-475827285.us-east-1.elb.amazonaws.com"
-// ];
+const cors = require("cors");
+let allowedOrigins = [
+  "http://localhost:8080",
+  "https://git.heroku.com/movies-guide.git",
+  "http://testsite.com",
+  "http://localhost:1234",
+  "https://myflixmovieapplication.netlify.app",
+  "http://localhost:4200",
+  "https://3.95.24.165",
+  "http://reactbucketachievement1-1.7.s3-website.eu-west-2.amazonaws.com",
+  "http://albwebserver-475827285.us-east-1.elb.amazonaws.com"
+];
 
 const s3Client = new S3Client({
   region: "us-east-1",
@@ -58,30 +58,20 @@ const listObjectsParams = {
 listObjectsCmD = new ListObjectsV2Command(listObjectsParams)
 s3Client.send(listObjectsCmD)
 
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       if (!origin) return callback(null, true);
-//       if (allowedOrigins.indexOf(origin) === -1) {
-//         let message =
-//           "The CORS policy for this application doesn’t allow access from origin " +
-//           origin;
-//         return callback(new Error(message), false);
-//       }
-//       return callback(null, true);
-//     },
-//   })
-// );
-
-var allowCrossDomain = function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-
-  next();
-}
-
-app.use(allowCrossDomain);
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        let message =
+          "The CORS policy for this application doesn’t allow access from origin " +
+          origin;
+        return callback(new Error(message), false);
+      }
+      return callback(null, true);
+    },
+  })
+);
 
 let auth = require("./auth.js")(app);
 
